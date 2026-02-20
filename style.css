@@ -1,0 +1,62 @@
+/* Page background */
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a, #9333ea);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Main container */
+.container{
+    background: white;
+    padding: 30px;
+    width: 350px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* Title */
+h1{
+    margin-bottom: 20px;
+    color: #111827;
+}
+
+/* Input box */
+input{
+    width: 70%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+/* Button */
+button{
+    padding: 10px 15px;
+    border: none;
+    background: #6366f1;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover{
+    background: #4f46e5;
+}
+
+/* Task list */
+ul{
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+li{
+    background: #f3f4f6;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
