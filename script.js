@@ -2,62 +2,80 @@ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 const taskInput = document.getElementById("taskInput");
 const taskTime = document.getElementById("taskTime");
-const taskList = document.getElementById("taskList");
 const addBtn = document.getElementById("addBtn");
+const taskList = document.getElementById("taskList");
 
-/* Notification permission */
+/* Request notification permission */
 if ("Notification" in window) {
     Notification.requestPermission();
 }
 
-/* Save */
-function saveTasks() {
+/* Save tasks */
+function saveTasks(){
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-/* Render */
-function renderTasks() {
+/* Render tasks */
+function renderTasks(){
+
     taskList.innerHTML = "";
 
-    tasks.forEach((task, index) => {
+    tasks.forEach((task,index)=>{
 
         const li = document.createElement("li");
 
+        if(task.completed){
+            li.classList.add("completed");
+        }
+
         li.innerHTML = `
-            <div>
-                ${task.text}<br>
-                <small>${task.time ? new Date(task.time).toLocaleString() : ""}</small>
+            <div onclick="toggleTask(${index})" class="task-text">
+                ${task.text}
+                <div class="task-time">
+                    ${task.time ? new Date(task.time).toLocaleString() : ""}
+                </div>
             </div>
-            <button onclick="deleteTask(${index})">X</button>
+
+            <button class="delete-btn" onclick="deleteTask(${index})">✖</button>
         `;
 
         taskList.appendChild(li);
     });
+
 }
 
-/* Add Task */
-addBtn.addEventListener("click", function () {
+/* Add task */
+addBtn.addEventListener("click",()=>{
 
     const text = taskInput.value.trim();
     const time = taskTime.value;
 
-    if (text === "") {
+    if(text === ""){
         alert("Enter a task");
         return;
     }
 
     tasks.push({
-        text: text,
-        time: time,
+        text:text,
+        time:time,
+        completed:false,
         notified:false
     });
 
-    taskInput.value = "";
-    taskTime.value = "";
+    taskInput.value="";
+    taskTime.value="";
 
     saveTasks();
     renderTasks();
+
 });
+
+/* Toggle complete */
+function toggleTask(index){
+    tasks[index].completed = !tasks[index].completed;
+    saveTasks();
+    renderTasks();
+}
 
 /* Delete */
 function deleteTask(index){
@@ -66,19 +84,20 @@ function deleteTask(index){
     renderTasks();
 }
 
-/* Notification Checker */
+/* Notification checker */
 function checkNotifications(){
 
     const now = new Date().getTime();
 
     tasks.forEach((task,index)=>{
+
         if(task.time && !task.notified){
 
             if(new Date(task.time).getTime() <= now){
 
                 if(Notification.permission === "granted"){
                     new Notification("Task Reminder",{
-                        body:task.text
+                        body: task.text
                     });
                 }
 
@@ -86,7 +105,9 @@ function checkNotifications(){
                 saveTasks();
             }
         }
+
     });
+
 }
 
 setInterval(checkNotifications,5000);
