@@ -1,6 +1,41 @@
-input[type="datetime-local"] {
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
+body{
+    font-family: Arial;
+    background: linear-gradient(135deg,#1f1c2c,#928dab);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:white;
+}
+
+.container{
+    width:400px;
+    padding:25px;
+    border-radius:15px;
+    background:rgba(255,255,255,0.1);
+}
+
+.input-box{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+}
+
+input,button{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+}
+
+button{
+    cursor:pointer;
+}
+
+li{
+    margin-bottom:10px;
+    padding:10px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.2);
+    display:flex;
+    justify-content:space-between;
 }
