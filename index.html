@@ -1,34 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<title>To-Do Scheduler</title>
+<title>Premium Task Planner</title>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="style.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
+<header>
+
+<h1>Task Planner</h1>
+
+<button id="themeToggle">🌙</button>
+
+</header>
+
 <div class="container">
 
-    <h1>Task Planner</h1>
+<div class="task-input">
 
-    <div class="input-section">
+<input type="text" id="taskInput" placeholder="Enter task">
 
-        <input type="text" id="taskInput" placeholder="Enter your task">
+<input type="datetime-local" id="taskTime">
 
-        <input type="datetime-local" id="taskTime">
+<select id="taskCategory">
+<option value="Work">Work</option>
+<option value="Study">Study</option>
+<option value="Personal">Personal</option>
+<option value="Important">Important</option>
+</select>
 
-        <button id="addBtn">Add Task</button>
-
-    </div>
-
-    <ul id="taskList"></ul>
+<button id="addTaskBtn">Add Task</button>
 
 </div>
 
+<ul id="taskList"></ul>
+
+</div>
+
+<audio id="alarmSound">
+
+<source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+
+</audio>
+
 <script src="script.js"></script>
+
 </body>
 </html>
