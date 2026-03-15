@@ -1,115 +1,223 @@
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-const taskInput = document.getElementById("taskInput");
-const taskTime = document.getElementById("taskTime");
-const addBtn = document.getElementById("addBtn");
-const taskList = document.getElementById("taskList");
+const taskInput=document.getElementById("taskInput");
+const taskTime=document.getElementById("taskTime");
+const taskCategory=document.getElementById("taskCategory");
+const taskList=document.getElementById("taskList");
+const alarm=document.getElementById("alarmSound");
 
-/* Request notification permission */
-if ("Notification" in window) {
-    Notification.requestPermission();
+/* Notifications */
+
+if("Notification" in window){
+Notification.requestPermission();
 }
 
-/* Save tasks */
+/* Save */
+
 function saveTasks(){
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+localStorage.setItem("tasks",JSON.stringify(tasks));
 }
 
-/* Render tasks */
+/* Render */
+
 function renderTasks(){
 
-    taskList.innerHTML = "";
+taskList.innerHTML="";
 
-    tasks.forEach((task,index)=>{
+tasks.forEach((task,index)=>{
 
-        const li = document.createElement("li");
+const li=document.createElement("li");
+li.draggable=true;
 
-        if(task.completed){
-            li.classList.add("completed");
-        }
-
-        li.innerHTML = `
-            <div onclick="toggleTask(${index})" class="task-text">
-                ${task.text}
-                <div class="task-time">
-                    ${task.time ? new Date(task.time).toLocaleString() : ""}
-                </div>
-            </div>
-
-            <button class="delete-btn" onclick="deleteTask(${index})">✖</button>
-        `;
-
-        taskList.appendChild(li);
-    });
-
+if(task.completed){
+li.classList.add("completed");
 }
 
-/* Add task */
-addBtn.addEventListener("click",()=>{
+li.innerHTML=`
 
-    const text = taskInput.value.trim();
-    const time = taskTime.value;
+<div class="task-info" onclick="toggleTask(${index})">
 
-    if(text === ""){
-        alert("Enter a task");
-        return;
-    }
+<strong>${task.text}</strong>
 
-    tasks.push({
-        text:text,
-        time:time,
-        completed:false,
-        notified:false
-    });
+<span class="task-category ${task.category}">
+${task.category}
+</span>
 
-    taskInput.value="";
-    taskTime.value="";
+<span class="countdown" id="countdown-${index}">
+${task.time ? new Date(task.time).toLocaleString() : ""}
+</span>
 
-    saveTasks();
-    renderTasks();
+</div>
+
+<div class="task-actions">
+
+<button onclick="editTask(${index})">✏️</button>
+
+<button onclick="deleteTask(${index})">🗑️</button>
+
+</div>
+
+`;
+
+taskList.appendChild(li);
+
+dragEvents(li,index);
 
 });
 
-/* Toggle complete */
-function toggleTask(index){
-    tasks[index].completed = !tasks[index].completed;
-    saveTasks();
-    renderTasks();
+}
+
+/* Add */
+
+document.getElementById("addTaskBtn").onclick=function(){
+
+const text=taskInput.value.trim();
+const time=taskTime.value;
+const category=taskCategory.value;
+
+if(text==="") return;
+
+tasks.push({
+
+text:text,
+time:time,
+category:category,
+completed:false,
+notified:false
+
+});
+
+taskInput.value="";
+taskTime.value="";
+
+saveTasks();
+renderTasks();
+
+}
+
+/* Toggle */
+
+function toggleTask(i){
+
+tasks[i].completed=!tasks[i].completed;
+
+saveTasks();
+renderTasks();
+
 }
 
 /* Delete */
-function deleteTask(index){
-    tasks.splice(index,1);
-    saveTasks();
-    renderTasks();
-}
 
-/* Notification checker */
-function checkNotifications(){
+function deleteTask(i){
 
-    const now = new Date().getTime();
+tasks.splice(i,1);
 
-    tasks.forEach((task,index)=>{
-
-        if(task.time && !task.notified){
-
-            if(new Date(task.time).getTime() <= now){
-
-                if(Notification.permission === "granted"){
-                    new Notification("Task Reminder",{
-                        body: task.text
-                    });
-                }
-
-                tasks[index].notified = true;
-                saveTasks();
-            }
-        }
-
-    });
+saveTasks();
+renderTasks();
 
 }
 
-setInterval(checkNotifications,5000);
+/* Edit */
+
+function editTask(i){
+
+let newText=prompt("Edit task",tasks[i].text);
+
+if(newText){
+
+tasks[i].text=newText;
+
+saveTasks();
+renderTasks();
+
+}
+
+}
+
+/* Countdown + Notification */
+
+function checkReminders(){
+
+const now=new Date().getTime();
+
+tasks.forEach((task,i)=>{
+
+if(task.time){
+
+const diff=new Date(task.time).getTime()-now;
+
+const el=document.getElementById(`countdown-${i}`);
+
+if(diff>0){
+
+let mins=Math.floor(diff/60000);
+let secs=Math.floor((diff%60000)/1000);
+
+if(el) el.innerText=`⏳ ${mins}m ${secs}s`;
+
+}
+
+if(diff<=0 && !task.notified){
+
+if(Notification.permission==="granted"){
+
+new Notification("Task Reminder",{body:task.text});
+
+}
+
+alarm.play();
+
+task.notified=true;
+
+saveTasks();
+
+}
+
+}
+
+});
+
+}
+
+setInterval(checkReminders,1000);
+
+/* Drag & Drop */
+
+let dragIndex;
+
+function dragEvents(el,index){
+
+el.addEventListener("dragstart",()=>{
+
+dragIndex=index;
+
+});
+
+el.addEventListener("dragover",(e)=>{
+
+e.preventDefault();
+
+});
+
+el.addEventListener("drop",()=>{
+
+let temp=tasks[dragIndex];
+tasks[dragIndex]=tasks[index];
+tasks[index]=temp;
+
+saveTasks();
+renderTasks();
+
+});
+
+}
+
+/* Theme toggle */
+
+document.getElementById("themeToggle").onclick=function(){
+
+document.body.classList.toggle("light");
+
+}
 
 renderTasks();
